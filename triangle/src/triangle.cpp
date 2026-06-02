@@ -1,19 +1,14 @@
+#include "file_utils.hpp"
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 using namespace std;
 
-const char *vertexShaderSource = "#version 330 core\n"
-	"layout (location = 0) in vec3 aPos;\n"
-	"void main() {\n"
-	"	gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-	"}\0";
+const string vertexShaderSourceString = load_file("triangle/shaders/vertex.glsl");
+const char *vertexShaderSource = vertexShaderSourceString.c_str();
 
-const char *fragmentShaderSource = "#version 330 core\n"
-	"out vec4 FragColor;\n"
-	"void main() {\n"
-	"	FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-	"}\0";
+const string fragmentShaderSourceString = load_file("triangle/shaders/fragment.glsl");
+const char *fragmentShaderSource = fragmentShaderSourceString.c_str();
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -114,7 +109,7 @@ int main() {
 	glDeleteShader(fragmentShader);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);	
+	glEnableVertexAttribArray(0);
 
 	while(!glfwWindowShouldClose(window))
 	{
@@ -128,7 +123,7 @@ int main() {
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		glfwSwapBuffers(window);
-		glfwPollEvents();    
+		glfwPollEvents();
 	}
 	glfwTerminate();
 	return 0;
