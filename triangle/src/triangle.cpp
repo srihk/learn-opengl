@@ -27,8 +27,8 @@ float vertices[] = {
 	0.0f, 0.5f, 0.0f
 };
 
-int main() {
-	cout << "hi!\n";
+GLFWwindow* createWindow() {
+    cout << "hi!\n";
 	if (!glfwInit()) {
 		cout << "glfwInit is not initing!\n";
 	}
@@ -38,17 +38,22 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
 	if (window == nullptr) {
-		cout << "oh its NULL!\n";
+		cout << "oh the window is NULL!\n";
+		exit(-2);
 	}
 	glfwMakeContextCurrent(window);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
-		return -1;
+		exit(-1);
 	}
 	glViewport(0, 0, 640, 480);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	cout << "glGetString(GL_VERSION): " << glGetString(GL_VERSION) << endl;
+	return window;
+}
 
-	// Create Vertex Array Object.
+void compileShaders() {
+    // Create Vertex Array Object.
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
 
@@ -72,7 +77,7 @@ int main() {
 
 	if (!success) {
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED: " << infoLog << std::endl;
 	}
 
 	// Create Fragment Shader
@@ -85,7 +90,7 @@ int main() {
 
 	if (!success) {
 		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED: " << infoLog << std::endl;
 	}
 
 	// Create Shader Program
@@ -99,7 +104,7 @@ int main() {
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+		std::cout << "ERROR::PROGRAM::LINKING_FAILED: " << infoLog << std::endl;
 	}
 
 	glUseProgram(shaderProgram);
@@ -107,11 +112,10 @@ int main() {
 	// Cleanup: Remove the shaders after linking.
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+}
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	while(!glfwWindowShouldClose(window))
+void mainLoop(GLFWwindow *window) {
+    while(!glfwWindowShouldClose(window))
 	{
 		processInput(window);
 
@@ -125,6 +129,18 @@ int main() {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+}
+
+int main() {
+    GLFWwindow* window = createWindow();
+
+    compileShaders();
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	mainLoop(window);
+
 	glfwTerminate();
 	return 0;
 }
