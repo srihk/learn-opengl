@@ -1,4 +1,5 @@
 #include "file_utils.hpp"
+#include <cmath>
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -52,7 +53,7 @@ GLFWwindow* createWindow() {
 	return window;
 }
 
-void compileShaders() {
+unsigned int compileShaders() {
     // Create Vertex Array Object.
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
@@ -112,15 +113,22 @@ void compileShaders() {
 	// Cleanup: Remove the shaders after linking.
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	return shaderProgram;
 }
 
-void mainLoop(GLFWwindow *window) {
+void mainLoop(GLFWwindow *window, unsigned int shaderProgram) {
     while(!glfwWindowShouldClose(window))
 	{
 		processInput(window);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Update uniform color.
+		float timeValue = glfwGetTime();
+		float greenValue = sin(timeValue) / 2.0f + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
 		//glUseProgram(shaderProgram);
 		//glBindVertexArray(VAO);
@@ -134,12 +142,12 @@ void mainLoop(GLFWwindow *window) {
 int main() {
     GLFWwindow* window = createWindow();
 
-    compileShaders();
+    unsigned int shaderProgram = compileShaders();
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	mainLoop(window);
+	mainLoop(window, shaderProgram);
 
 	glfwTerminate();
 	return 0;
