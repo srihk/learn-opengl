@@ -2,6 +2,6 @@
 #define FILE_UTILS_HPP
 #include <string>
 
-const std::string load_file(std::string file_path);
+std::string load_file(const std::string &file_path);
 
 #endif

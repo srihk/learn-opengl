@@ -1,11 +1,11 @@
 #include "file_utils.hpp"
 #include <fstream>
 
-const std::string load_file(std::string file_path) {
+std::string load_file(const std::string &file_path) {
     std::ifstream file_ifstream(file_path, std::ios::binary);
 
     if (!file_ifstream) {
-        return "";
+        return "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ. File Path: " + file_path;
     }
 
     return std::string(
