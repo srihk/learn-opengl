@@ -5,8 +5,8 @@ LDFLAGS = -L ThirdParty/lib -lglfw
 all: bin/triangle
 
 # Linking Rule
-bin/%: obj/%.o obj/glad.o obj/file_utils.o obj/shader.o
-	$(CXX) -o $@ $< obj/glad.o obj/file_utils.o obj/shader.o $(LDFLAGS)
+bin/%: obj/%.o obj/glad.o obj/file_utils.o obj/shader.o obj/stb_image.o
+	$(CXX) -o $@ $< obj/glad.o obj/file_utils.o obj/shader.o obj/stb_image.o $(LDFLAGS)
 
 bin:
 	mkdir -p bin
@@ -19,6 +19,9 @@ obj/%.o: triangle/src/%.cpp | obj
 	$(CXX) -c $(CFLAGS) -o $@ $<
 
 obj/%.o: common/%.cpp | obj
+	$(CXX) -c $(CFLAGS) -o $@ $<
+
+obj/%.o: ThirdParty/src/%.cpp | obj
 	$(CXX) -c $(CFLAGS) -o $@ $<
 
 obj/glad.o: ThirdParty/src/glad.c | obj

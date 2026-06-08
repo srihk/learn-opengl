@@ -3,6 +3,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <stb_image.h>
 using namespace std;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -20,6 +21,12 @@ float vertices[] = {
 	-0.5f, -0.5f, 0.0f,
 	0.5f, -0.5f, 0.0f,
 	0.0f, 0.5f, 0.0f
+};
+
+float texCoords[] = {
+    0.0f, 0.0f,
+    1.0f, 0.0f,
+    0.5f, 1.0f
 };
 
 GLFWwindow* createWindow() {
@@ -59,6 +66,15 @@ void setupVertexBuffers() {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+}
+
+void load_texture() {
+    int width, height, nChannels;
+    unsigned char *data = stbi_load("triangle/assets/container.jpg", &width, &height, &nChannels, 0);
+
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
 }
 
 void mainLoop(GLFWwindow *window, const Shader &ourShader) {
