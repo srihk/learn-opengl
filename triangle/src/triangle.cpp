@@ -18,15 +18,10 @@ void processInput(GLFWwindow *window) {
 }
 
 float vertices[] = {
-	-0.5f, -0.5f, 1.0f,
-	0.5f, -0.5f, 0.23f,
-	0.0f, 0.5f, -0.45f
-};
-
-float texCoords[] = {
-    0.0f, 0.0f,
-    1.0f, 0.0f,
-    0.5f, 1.0f
+	0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+    0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+	-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, 0.0f, 0.0f, 1.0f
 };
 
 GLFWwindow* createWindow() {
@@ -55,6 +50,10 @@ GLFWwindow* createWindow() {
 }
 
 void setupVertexBuffers() {
+    unsigned int indices[] = {
+        0, 1, 3,
+        1, 2, 3
+    };
     // Create Vertex Array Object.
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
@@ -66,15 +65,27 @@ void setupVertexBuffers() {
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 }
 
 void load_texture() {
     int width, height, nChannels;
     unsigned char *data = stbi_load("triangle/assets/container.jpg", &width, &height, &nChannels, 0);
+    if (data == nullptr) {
+        cout << "couldn't load texture data!\n";
+    }
 
     unsigned int texture;
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(data);
 }
 
 void mainLoop(GLFWwindow *window, const Shader &ourShader) {
@@ -91,7 +102,8 @@ void mainLoop(GLFWwindow *window, const Shader &ourShader) {
 		int vertexColorLocation = glGetUniformLocation(ourShader.ID, "ourColor");
 		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -103,12 +115,16 @@ int main() {
 
     Shader ourShader("triangle/shaders/vertex.glsl", "triangle/shaders/fragment.glsl");
 
+	load_texture();
     setupVertexBuffers();
 
     ourShader.use();
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	mainLoop(window, ourShader);
 

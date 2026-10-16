@@ -1,5 +1,5 @@
 CXX = g++
-CFLAGS = -c -I ThirdParty/include -I include
+CFLAGS = -c -g -I ThirdParty/include -I include
 LDFLAGS = -L ThirdParty/lib -lglfw
 
 all: bin/triangle
