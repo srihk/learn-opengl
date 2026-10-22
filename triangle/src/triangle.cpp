@@ -72,9 +72,9 @@ void setupVertexBuffers() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 }
 
-void load_texture() {
+void load_texture(string texture_path) {
     int width, height, nChannels;
-    unsigned char *data = stbi_load("triangle/assets/container.jpg", &width, &height, &nChannels, 0);
+    unsigned char *data = stbi_load(texture_path.c_str(), &width, &height, &nChannels, 0);
     if (data == nullptr) {
         cout << "couldn't load texture data!\n";
     }
@@ -115,7 +115,7 @@ int main() {
 
     Shader ourShader("triangle/shaders/vertex.glsl", "triangle/shaders/fragment.glsl");
 
-	load_texture();
+	load_texture("triangle/assets/container.jpg");
     setupVertexBuffers();
 
     ourShader.use();
